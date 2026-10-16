@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --primary: #0F4C81;
+  --primary-dark: #0A3258;
+  --primary-light: #EBF3FA;
+  --accent: #0284C7;
+  --accent-light: #38BDF8;
+  --navy-900: #0B192C;
+  --navy-800: #1E3E62;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --bg-slate: #F8FAFC;
+  --card-border: #E2E8F0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1E293B;
+  background-color: #F8FAFC;
+  scroll-behavior: smooth;
+}
+
+.font-mono-code {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Glassmorphism Accents */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.glass-dark {
+  background: rgba(11, 25, 44, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.hero-gradient {
+  background: radial-gradient(circle at 15% 20%, rgba(2, 132, 199, 0.12) 0%, transparent 40%),
+              radial-gradient(circle at 85% 60%, rgba(15, 76, 129, 0.15) 0%, transparent 45%),
+              linear-gradient(180deg, #F0F7FD 0%, #FFFFFF 100%);
+}
+
+.card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px -10px rgba(15, 76, 129, 0.12);
+}
+
+/* Pulse Glow */
+@keyframes softPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+.pulse-badge {
+  animation: softPulse 2.5s infinite ease-in-out;
+}
+
+/* Architecture Flow Animated Path */
+@keyframes flowLine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.flow-connector {
+  background: linear-gradient(90deg, #0284c7 0%, #38bdf8 50%, #0284c7 100%);
+  background-size: 200% 100%;
+  animation: flowLine 3s linear infinite;
+}
+
+/* Modal Transitions */
+.modal-overlay {
+  transition: opacity 0.25s ease-out;
+}
+.modal-content {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease-out;
+}
+
+/* Print Styles for Project Report Modal */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #reportModal, #reportModal * {
+    visibility: visible;
+  }
+  #reportModal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lost and Found Web Portal for College | ABESIT</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0f7fd',
+              100: '#e0effb',
+              500: '#0284c7',
+              600: '#0369a1',
+              700: '#0F4C81',
+              800: '#1E3E62',
+              900: '#0B192C'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-auto"></div>
+
+  <!-- Top Institutional Bar -->
+  <div class="bg-brand-900 text-slate-300 text-xs py-2 px-4 border-b border-brand-800/80">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center gap-1.5 font-semibold text-white">
+          <i class="fa-solid fa-graduation-cap text-sky-400"></i> ABES Institute of Technology, Ghaziabad
+        </span>
+        <span class="text-slate-500 hidden sm:inline">|</span>
+        <span class="text-slate-400 hidden sm:inline">Affiliated to Dr. A.P.J. Abdul Kalam Technical University, Lucknow</span>
+      </div>
+      <div class="flex items-center gap-3 font-mono text-[11px]">
+        <span class="bg-brand-800 px-2 py-0.5 rounded text-sky-300 border border-brand-700">Project ID: 2026-27CSEMPID058</span>
+        <span class="text-slate-400 hidden md:inline">December 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Sticky Navigation Bar -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo & Title -->
+      <a href="#hero" class="flex items-center gap-3 group">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-brand-700 to-sky-500 flex items-center justify-center text-white shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
+          <i class="fa-solid fa-compass-drafting text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight text-brand-900">ABESIT <span class="text-sky-600">Lost & Found</span></span>
+            <span class="text-[10px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800 px-2 py-0.5 rounded-full border border-sky-200">v1.0</span>
+          </div>
+          <p class="text-xs text-slate-500 font-medium">Campus Asset Recovery System</p>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden lg:flex items-center gap-7 text-sm font-semibold text-slate-600">
+        <a href="#problem-summary" class="hover:text-sky-600 transition-colors">Overview</a>
+        <a href="#objectives" class="hover:text-sky-600 transition-colors">Objectives</a>
+        <a href="#browse" class="hover:text-sky-600 transition-colors">Search & Browse</a>
+        <a href="#matching" class="hover:text-sky-600 transition-colors">Match Engine</a>
+      </nav>
+
+      <!-- Action Buttons -->
+      <div class="hidden sm:flex items-center gap-3">
+        <button id="adminToggleBtn" onclick="toggleAdminMode()" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-900 text-white transition-all flex items-center gap-2 shadow-sm">
+          <i class="fa-solid fa-user-shield text-xs"></i> Admin View
+        </button>
+
+        <button onclick="openReportModal('lost')" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-brand-700 hover:bg-brand-800 text-white shadow-md shadow-brand-700/20 transition-all hover:shadow-lg flex items-center gap-2">
+          <i class="fa-solid fa-plus text-xs"></i> Report Item
+        </button>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobileMenuBtn" class="lg:hidden p-2.5 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none">
+        <i class="fa-solid fa-bars text-xl"></i>
+      </button>
+
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobileMenu" class="hidden lg:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-3">
+      <a href="#problem-summary" class="block py-2 text-sm font-semibold text-slate-700 hover:text-sky-600">Overview</a>
+      <a href="#objectives" class="block py-2 text-sm font-semibold text-slate-700 hover:text-sky-600">Objectives</a>
+      <a href="#browse" class="block py-2 text-sm font-semibold text-slate-700 hover:text-sky-600">Search & Browse</a>
+      <a href="#matching" class="block py-2 text-sm font-semibold text-slate-700 hover:text-sky-600">Match Engine</a>
+      <div class="pt-3 border-t border-slate-200 flex flex-col gap-2">
+        <button onclick="toggleAdminMode()" class="w-full py-2.5 text-xs font-bold bg-slate-800 text-white rounded-xl">Toggle Admin View</button>
+        <button onclick="openReportModal('lost')" class="w-full py-2.5 text-xs font-bold bg-brand-700 text-white rounded-xl">Report Item</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Section 1: Hero Section -->
+  <section id="hero" class="relative hero-gradient pt-16 pb-20 overflow-hidden border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Hero Content -->
+        <div class="lg:col-span-7 space-y-6">
+          
+          <!-- Academic Badge -->
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 border border-sky-200 text-sky-800 text-xs font-semibold shadow-sm backdrop-blur-sm">
+            <span class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
+            <span>Department of Computer Science & Engineering · ABESIT Ghaziabad</span>
+          </div>
+
+          <!-- Main Title -->
+          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-brand-900 tracking-tight leading-[1.15]">
+            Lost and Found <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 via-brand-700 to-indigo-600">
+              Web Portal for College
+            </span>
+          </h1>
+
+          <!-- Tagline -->
+          <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl font-normal">
+            A centralized web-based system designed to improve the reporting, searching, and recovery of misplaced belongings within the ABESIT campus.
+          </p>
+
+          <!-- Primary CTAs -->
+          <div class="flex flex-wrap items-center gap-3.5 pt-2">
+            <a href="#browse" onclick="setTab('lost')" class="px-6 py-3.5 rounded-xl font-bold text-sm bg-brand-700 hover:bg-brand-800 text-white shadow-lg shadow-brand-700/25 transition-all hover:-translate-y-0.5 flex items-center gap-2">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i> Browse Lost Items
+            </a>
+
+            <button onclick="openReportModal('found')" class="px-5 py-3.5 rounded-xl font-semibold text-sm bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 transition-all flex items-center gap-2">
+              <i class="fa-solid fa-hand-holding-hand text-xs text-sky-600"></i> Found an Item?
+            </button>
+          </div>
+
+          <!-- Quick Metrics Banner -->
+          <div class="pt-6 border-t border-slate-200/80 grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="bg-white/70 p-3 rounded-xl border border-slate-200/70">
+              <span class="text-2xl font-extrabold text-brand-900 block" id="metricTotalReports">180+</span>
+              <span class="text-[11px] text-slate-500 font-medium">Misplaced Cases</span>
+            </div>
+            <div class="bg-white/70 p-3 rounded-xl border border-slate-200/70">
+              <span class="text-2xl font-extrabold text-emerald-600 block" id="metricRecoveredCount">42</span>
+              <span class="text-[11px] text-slate-500 font-medium">Returned to Owners</span>
+            </div>
+            <div class="bg-white/70 p-3 rounded-xl border border-slate-200/70">
+              <span class="text-2xl font-extrabold text-sky-600 block">94%</span>
+              <span class="text-[11px] text-slate-500 font-medium">Match Accuracy</span>
+            </div>
+            <div class="bg-white/70 p-3 rounded-xl border border-slate-200/70">
+              <span class="text-2xl font-extrabold text-amber-600 block">&lt; 24h</span>
+              <span class="text-[11px] text-slate-500 font-medium">Average Recovery</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Hero Live Card Preview -->
+        <div class="lg:col-span-5 relative">
+          <div class="glass-panel rounded-3xl p-6 shadow-2xl border border-white/60 relative z-10">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div class="flex items-center gap-2">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 pulse-badge"></span>
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Live Campus Stream</span>
+              </div>
+              <span class="text-[11px] font-mono text-slate-400">ABESIT-LiveSync</span>
+            </div>
+
+            <!-- Spotlight Card -->
+            <div class="mt-4 p-4 rounded-2xl bg-gradient-to-br from-blue-50/70 to-indigo-50/50 border border-blue-100 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-rose-100 text-rose-700">Lost Item #L-101</span>
+                <span class="text-[11px] text-slate-500"><i class="fa-regular fa-clock"></i> 2 hours ago</span>
+              </div>
+              <div class="flex gap-3 items-center">
+                <img src="https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=200&q=80" alt="Casio Calculator" class="w-14 h-14 rounded-xl object-cover border border-slate-200 shadow-sm">
+                <div>
+                  <h4 class="text-sm font-bold text-slate-900">Casio FX-991EX Calculator</h4>
+                  <p class="text-xs text-slate-500">Central Library · 2nd Floor Study Table</p>
+                </div>
+              </div>
+              
+              <!-- Matched Indicator -->
+              <div class="bg-white p-3 rounded-xl border border-emerald-200 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">
+                    <i class="fa-solid fa-bolt"></i>
+                  </div>
+                  <div>
+                    <span class="text-xs font-bold text-slate-800 block">Matched with Found #F-202</span>
+                    <span class="text-[11px] text-slate-500">Deposited at Library Desk</span>
+                  </div>
+                </div>
+                <span class="px-2 py-1 rounded-md text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">89% Match</span>
+              </div>
+            </div>
+
+            <!-- Quick Action Shortcuts -->
+            <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
+              <button onclick="openReportModal('lost')" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 transition text-center">
+                <i class="fa-solid fa-circle-exclamation text-rose-500 mr-1"></i> I Lost Something
+              </button>
+              <button onclick="openReportModal('found')" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 font-semibold text-slate-700 transition text-center">
+                <i class="fa-solid fa-hand-holding-hand text-emerald-600 mr-1"></i> I Found Something
+              </button>
+            </div>
+          </div>
+
+          <!-- Background Decorative Elements -->
+          <div class="absolute -top-6 -right-6 w-56 h-56 bg-sky-400/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -bottom-6 -left-6 w-56 h-56 bg-brand-700/20 rounded-full blur-3xl pointer-events-none"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section 2: Executive Summary & Problem Statement -->
+  <section id="problem-summary" class="py-20 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Header -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <span class="text-xs font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-100">
+          Executive Summary
+        </span>
+        <h2 class="text-3xl font-extrabold text-brand-900 mt-3 tracking-tight">
+          Overcoming Traditional Campus Bottlenecks
+        </h2>
+        <p class="text-slate-600 mt-3 text-sm sm:text-base leading-relaxed">
+          In a large institution like ABESIT with multiple academic blocks, cafeterias, and labs, misplaced belongings lead to anxiety and academic disruption. Here is how our centralized system replaces legacy mechanisms.
+        </p>
+      </div>
+
+      <!-- Problem Statement vs Centralized Solution Comparison -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        
+        <!-- Legacy Problem Card -->
+        <div class="p-8 rounded-3xl bg-rose-50/40 border border-rose-100 hover:border-rose-200 transition-all space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900">The Problem: Decentralized & Fragmented Channels</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Existing practices in colleges are largely dependent on physical notice boards, handwritten proctor registers, verbal inquiries, and scattered WhatsApp/Telegram messaging groups.
+          </p>
+          <ul class="space-y-2.5 text-xs text-slate-600 pt-2">
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
+              <span><strong>Ephemeral Records:</strong> Notices are overlooked or torn down; chat messages quickly get buried under daily discussions.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
+              <span><strong>No Central Search:</strong> Students do not know where to look or who currently holds their misplaced belongings.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-xmark text-rose-500 mt-0.5"></i>
+              <span><strong>Unverified Claims:</strong> Physical registers lack standardized verification protocols, risking handover to fraudulent claimants.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Centralized Solution Card -->
+        <div class="p-8 rounded-3xl bg-sky-50/50 border border-sky-100 hover:border-sky-200 transition-all space-y-4">
+          <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <h3 class="text-xl font-bold text-slate-900">The Solution: Single-Source Digital Recovery Portal</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            The Lost and Found Web Portal unifies every misplaced and recovered item into a single, accessible, institutional digital register with automated verification workflows.
+          </p>
+          <ul class="space-y-2.5 text-xs text-slate-600 pt-2">
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+              <span><strong>Structured Reporting:</strong> Captures category, campus location, date/time, and photo attachments with privacy safeguards.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+              <span><strong>Transparent Matching Engine:</strong> Computes weighted similarity scores without revealing confidential ownership marks.</span>
+            </li>
+            <li class="flex items-start gap-2">
+              <i class="fa-solid fa-check text-emerald-600 mt-0.5"></i>
+              <span><strong>Audited Administrative Oversight:</strong> Department custodians approve claims based on private verification proof before closure.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Core Objectives Section (6 Cards) -->
+      <div id="objectives" class="pt-8">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <h3 class="text-2xl font-bold text-brand-900">Core System Objectives</h3>
+          <p class="text-xs sm:text-sm text-slate-500 mt-2">Architected to fulfill academic mini-project criteria and institutional operational requirements.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <!-- Objective 1 -->
+          <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-lg transition-all space-y-3 card-hover">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-base">
+              <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">1. Centralized Campus Reporting</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Provides students, faculty, and administrative staff with a single canonical web application for reporting lost and found belongings across the ABESIT campus.
+            </p>
+          </div>
+
+          <!-- Objective 2 -->
+          <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-lg transition-all space-y-3 card-hover">
+            <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-base">
+              <i class="fa-solid fa-table-list"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">2. Structured Item Entry</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Enforces structured data capture including category, detailed descriptions, campus zone location, exact timestamps, and optional photograph uploads.
+            </p>
+          </div>
+
+          <!-- Objective 3 -->
+          <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-lg transition-all space-y-3 card-hover">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-base">
+              <i class="fa-solid fa-filter"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">3. Search & Filtering Facilities</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Enables multi-criteria query execution by keyword, item category, campus landmark, date range, and current case progression status.
+            </p>
+          </div>
+
+          <!-- Objective 4 -->
+          <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-lg transition-all space-y-3 card-hover">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-base">
+              <i class="fa-solid fa-diagram-project"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">4. Match Suggestions Mechanism</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Applies a transparent weighted heuristic comparing categories, keywords, date proximity, and location to surface high-probability candidate matches.
+            </p>
+          </div>
+
+          <!-- Objective 5 -->
+          <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-lg transition-all space-y-3 card-hover">
+            <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-base">
+              <i class="fa-solid fa-user-lock"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">5. Secure Claim & Verification</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Guarantees privacy by withholding distinctive identifying features from public view; claimants submit confidential proof reviewed by custodians.
+            </p>
+          </div>
+
+          <!-- Objective 6 -->
+          <div class="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:shadow-lg transition-all space-y-3 card-hover">
+            <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-base">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <h4 class="font-bold text-slate-900 text-base">6. Administrator Dashboard</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">
+              Provides college authorities with tools for content moderation, duplicate resolution, disputed claims arbitration, and transparent digital audit trails.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section 3: Interactive Search & Report Browsing Module -->
+  <section id="browse" class="py-20 bg-slate-50 border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Section Title & Tabs -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-600 bg-sky-100 px-3 py-1 rounded-full">
+            Campus Registry
+          </span>
+          <h2 class="text-3xl font-extrabold text-brand-900 mt-2 tracking-tight">
+            Search & Browse Misplaced Belongings
+          </h2>
+          <p class="text-slate-600 text-sm mt-1">Real-time catalog of reported lost belongings and recovered campus items.</p>
+        </div>
+
+        <!-- Filter Tabs: All, Lost, Found -->
+        <div class="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-1 self-start md:self-auto">
+          <button id="tabAll" onclick="setTab('all')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all bg-blue-600 text-white shadow-sm">
+            All Records
+          </button>
+          <button id="tabLost" onclick="setTab('lost')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100">
+            <span class="w-2 h-2 rounded-full bg-rose-500 inline-block mr-1"></span> Lost Items (<span id="metricLostCount">4</span>)
+          </button>
+          <button id="tabFound" onclick="setTab('found')" class="px-4 py-2 rounded-xl text-xs font-bold transition-all text-slate-600 hover:bg-slate-100">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-1"></span> Found Items (<span id="metricFoundCount">4</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Controls Bar -->
+      <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm mb-8 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          
+          <!-- Live Search Bar -->
+          <div class="relative sm:col-span-2 lg:col-span-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-xs"></i>
+            <input type="text" id="searchInput" placeholder="Search keywords..." class="w-full pl-9 pr-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-slate-50/50">
+          </div>
+
+          <!-- Category Filter -->
+          <div>
+            <select id="categoryFilter" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50/50 text-slate-700">
+              <option value="all">All Categories</option>
+              <option value="Electronics">Electronics & Chargers</option>
+              <option value="Identity & Cards">Identity & Smart Cards</option>
+              <option value="Books & Notes">Books & Study Material</option>
+              <option value="Wallets & Bags">Wallets, Bags & Pouches</option>
+              <option value="Keys & Locks">Keys & Locks</option>
+            </select>
+          </div>
+
+          <!-- Location Filter -->
+          <div>
+            <select id="locationFilter" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50/50 text-slate-700">
+              <option value="all">All Locations</option>
+              <option value="Library">Central Library</option>
+              <option value="CS Block">CS Block & Labs</option>
+              <option value="Cafeteria">Main Cafeteria & Canteen</option>
+              <option value="Auditorium">Main Auditorium</option>
+              <option value="Sports Complex">Sports Complex</option>
+              <option value="Ramanujan">Ramanujan Block</option>
+            </select>
+          </div>
+
+          <!-- Date Filter -->
+          <div class="relative">
+            <input type="date" id="dateFilter" title="Filter by incident date" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50/50 text-slate-700">
+          </div>
+
+          <!-- Status Filter -->
+          <div>
+            <select id="statusFilter" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 bg-slate-50/50 text-slate-700">
+              <option value="all">All Statuses</option>
+              <option value="Reported">Active Report</option>
+              <option value="Under Claim Review">Under Claim Review</option>
+              <option value="Recovered">Recovered / Resolved</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Filter Status Bar & Reset -->
+        <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs text-slate-500">
+          <span id="resultCount" class="font-medium text-slate-600">Loading records...</span>
+          <button onclick="resetFilters()" class="text-sky-600 hover:text-sky-700 font-semibold flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-rotate-right text-[11px]"></i> Reset Filters
+          </button>
+        </div>
+      </div>
+
+      <!-- Item Cards Grid -->
+      <div id="itemsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Section 4: Match Suggestions & Claim Workflow Section -->
+  <section id="matching" class="py-20 bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        
+        <!-- Left: Transparent Weighted Logic Explanation -->
+        <div class="lg:col-span-6 space-y-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-3 py-1 rounded-full border border-sky-100">
+            Intelligent Recovery Engine
+          </span>
+          <h2 class="text-3xl font-extrabold text-brand-900 tracking-tight leading-snug">
+            Transparent Weighted Matching & Controlled Claims
+          </h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Rather than relying on opaque black-box machine learning models that can lead to disputed college belongings, the ABESIT portal utilizes a <strong>rule-based transparent weighted comparison</strong>. This ensures explainable match scores without leaking confidential claimant evidence.
+          </p>
+
+          <!-- 4 Weighted Pillars Breakdown -->
+          <div class="space-y-4 pt-2">
+            
+            <!-- Pillar 1 -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3.5">
+              <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">
+                40%
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-900">Category Agreement (Weight: 40%)</h4>
+                <p class="text-[11px] text-slate-500 mt-0.5">Strict classification matching (e.g. Electronics to Electronics, IDs to IDs). High baseline differentiator.</p>
+              </div>
+            </div>
+
+            <!-- Pillar 2 -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3.5">
+              <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0">
+                25%
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-900">Keywords & Description Similarity (Weight: 25%)</h4>
+                <p class="text-[11px] text-slate-500 mt-0.5">Natural language token overlap comparing brand names, colors, models, and physical tags.</p>
+              </div>
+            </div>
+
+            <!-- Pillar 3 -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3.5">
+              <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs shrink-0">
+                20%
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-900">Campus Location Proximity (Weight: 20%)</h4>
+                <p class="text-[11px] text-slate-500 mt-0.5">Matches reports filed in the same academic zone (e.g. Library 2nd Flr reading room vs Library desk).</p>
+              </div>
+            </div>
+
+            <!-- Pillar 4 -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start gap-3.5">
+              <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0">
+                15%
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-slate-900">Temporal / Date Proximity (Weight: 15%)</h4>
+                <p class="text-[11px] text-slate-500 mt-0.5">Prefers timestamps occurring on the same day or within 48 hours of reported misplacement.</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Privacy Callout -->
+          <div class="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 text-xs text-blue-900 space-y-1">
+            <span class="font-bold flex items-center gap-1.5 text-blue-800">
+              <i class="fa-solid fa-user-shield"></i> Ownership Protection Philosophy
+            </span>
+            <p class="text-slate-600 leading-relaxed">
+              Match scores remain advisory indicators. A high percentage does not automatically grant ownership. The claimant must submit non-public verification details (e.g., lock code, internal marks, serial number) for human custodian review.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Right: Interactive Match Simulator Console -->
+        <div class="lg:col-span-6">
+          <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800 space-y-6">
+            
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-sliders text-sky-400"></i>
+                <h3 class="text-base font-bold text-white">Interactive Match Simulator</h3>
+              </div>
+              <span class="text-xs font-mono bg-sky-950 text-sky-300 px-2.5 py-1 rounded-md border border-sky-800">Live Heuristic</span>
+            </div>
+
+            <!-- Pair Selectors -->
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-rose-300 mb-1.5 uppercase tracking-wider">
+                  <i class="fa-solid fa-circle text-[8px] mr-1"></i> Select Lost Item Report:
+                </label>
+                <select id="matchLostSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                  <!-- Populated by app.js -->
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-emerald-300 mb-1.5 uppercase tracking-wider">
+                  <i class="fa-solid fa-circle text-[8px] mr-1"></i> Select Found Item Report:
+                </label>
+                <select id="matchFoundSelect" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-sky-500">
+                  <!-- Populated by app.js -->
+                </select>
+              </div>
+            </div>
+
+            <!-- Score Visualizer Gauge -->
+            <div class="p-5 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Computed Match Confidence</span>
+                <span id="scoreTotal" class="text-2xl font-black font-mono text-sky-400">89%</span>
+              </div>
+
+              <!-- Bar breakdown -->
+              <div class="space-y-2.5 text-xs">
+                <div>
+                  <div class="flex justify-between text-slate-400 text-[11px] mb-1">
+                    <span>Category Match (max 40)</span>
+                    <span id="textCategory" class="font-mono text-slate-200">40 / 40 pts</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-slate-700 overflow-hidden">
+                    <div id="barCategory" class="h-full bg-sky-500 rounded-full transition-all duration-500" style="width: 100%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-slate-400 text-[11px] mb-1">
+                    <span>Keyword Similarity (max 25)</span>
+                    <span id="textDescription" class="font-mono text-slate-200">22 / 25 pts</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-slate-700 overflow-hidden">
+                    <div id="barDescription" class="h-full bg-indigo-500 rounded-full transition-all duration-500" style="width: 88%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-slate-400 text-[11px] mb-1">
+                    <span>Location Proximity (max 20)</span>
+                    <span id="textLocation" class="font-mono text-slate-200">17 / 20 pts</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-slate-700 overflow-hidden">
+                    <div id="barLocation" class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: 85%;"></div>
+                  </div>
+                </div>
+
+                <div>
+                  <div class="flex justify-between text-slate-400 text-[11px] mb-1">
+                    <span>Date Proximity (max 15)</span>
+                    <span id="textDate" class="font-mono text-slate-200">12 / 15 pts</span>
+                  </div>
+                  <div class="w-full h-2 rounded-full bg-slate-700 overflow-hidden">
+                    <div id="barDate" class="h-full bg-amber-500 rounded-full transition-all duration-500" style="width: 80%;"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dynamic Verdict Output -->
+            <div id="matchVerdict" class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <div class="pt-2">
+              <button onclick="openClaimModal('REP-2026-202')" class="w-full py-3 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white rounded-xl text-xs font-bold shadow-lg transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-shield-halved"></i> Simulate Claim Submission for Casio Calculator
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+
+  <!-- Section: Administrator Dashboard View (Simulated) -->
+  <section id="adminSection" class="hidden py-16 bg-slate-900 text-white border-b border-slate-800 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
+            <h2 class="text-2xl font-bold text-white">Administrator Moderation & Claim Audit Panel</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Authorized Custodian Review for ABESIT Department of CSE (Test Cases T04 & T06)</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 text-sky-400 font-mono">
+            <i class="fa-solid fa-user-check mr-1"></i> Role: Campus Custodian
+          </span>
+          <button onclick="toggleAdminMode()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300">
+            Exit
+          </button>
+        </div>
+      </div>
+
+      <!-- Pending Claims List -->
+      <div class="mt-8 space-y-4">
+        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-clipboard-check text-sky-400"></i> Pending Ownership Verification Claims
+        </h3>
+        
+        <div id="adminClaimsContainer" class="space-y-3">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Clean Portal Footer -->
+  <footer class="bg-brand-900 text-slate-400 py-10 border-t border-brand-800 text-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-700 to-sky-500 flex items-center justify-center text-white shadow-md shadow-sky-500/20">
+          <i class="fa-solid fa-compass-drafting text-lg"></i>
+        </div>
+        <div>
+          <div class="font-extrabold text-sm text-white tracking-tight">ABESIT <span class="text-sky-400">Lost & Found</span></div>
+          <p class="text-[11px] text-slate-400">Campus Asset Recovery System &middot; ABESIT Ghaziabad</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400">
+        <a href="#hero" class="hover:text-white transition-colors">Home</a>
+        <a href="#problem-summary" class="hover:text-white transition-colors">Overview</a>
+        <a href="#objectives" class="hover:text-white transition-colors">Objectives</a>
+        <a href="#browse" class="hover:text-white transition-colors">Search & Browse</a>
+        <a href="#matching" class="hover:text-white transition-colors">Match Engine</a>
+      </div>
+
+      <div class="text-[11px] text-slate-500">
+        &copy; 2026-27 ABESIT Campus Portal. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Modal 1: Report an Item Modal -->
+  <div id="reportModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative my-8">
+      
+      <!-- Close Button -->
+      <button onclick="closeReportModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="mb-6">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-100">
+          Campus Registry Submission
+        </span>
+        <h3 class="text-xl font-bold text-brand-900 mt-1">Submit a Misplaced or Found Item Report</h3>
+        <p class="text-xs text-slate-500">Provide accurate details to assist matching and safe recovery.</p>
+      </div>
+
+      <form id="newReportForm" class="space-y-4">
+        
+        <!-- Report Type Toggle -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Report Classification *</label>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input type="radio" name="reportType" value="lost" checked class="text-sky-600 focus:ring-sky-500">
+              <span class="text-xs font-bold text-rose-700">I Lost an Item</span>
+            </label>
+            <label class="flex items-center gap-2 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+              <input type="radio" name="reportType" value="found" class="text-sky-600 focus:ring-sky-500">
+              <span class="text-xs font-bold text-emerald-700">I Found an Item</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Item Title -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Item Title / Headline *</label>
+          <input type="text" id="reportTitle" required placeholder="e.g. Casio fx-991EX Calculator, Black Wildhorn Wallet" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <!-- Category & Location Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Category *</label>
+            <select id="reportCategory" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              <option value="Electronics">Electronics & Gadgets</option>
+              <option value="Identity & Cards">Identity & Smart Cards</option>
+              <option value="Books & Notes">Books & Study Material</option>
+              <option value="Wallets & Bags">Wallets & Bags</option>
+              <option value="Keys & Locks">Keys & Locks</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Campus Location *</label>
+            <select id="reportLocation" required class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              <option value="Central Library (2nd Floor)">Central Library (2nd Floor)</option>
+              <option value="CS Block (Computer Lab 3)">CS Block (Computer Lab 3)</option>
+              <option value="Main Cafeteria (Counter Area)">Main Cafeteria</option>
+              <option value="Main Auditorium (Foyer)">Main Auditorium</option>
+              <option value="Sports Complex (Basketball Court)">Sports Complex</option>
+              <option value="Ramanujan Block (Lecture Hall 204)">Ramanujan Block</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Date & Time Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Date *</label>
+            <input type="date" id="reportDate" required class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Approximate Time</label>
+            <input type="time" id="reportTime" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Public Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Public Description *</label>
+          <textarea id="reportDescription" rows="2" required placeholder="Describe appearance, general color, and where it was last seen. DO NOT disclose secret serial numbers or passwords here." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none"></textarea>
+        </div>
+
+        <!-- Reporter Credentials -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+          <span class="text-[11px] font-bold text-slate-700 block uppercase tracking-wider">Reporter Information</span>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input type="text" id="reporterName" required placeholder="Your Full Name" class="px-2.5 py-2 rounded-lg border border-slate-200 text-xs bg-white">
+            <input type="text" id="reporterRoll" placeholder="Roll No (e.g. 250290...)" class="px-2.5 py-2 rounded-lg border border-slate-200 text-xs bg-white">
+            <input type="email" id="reporterEmail" placeholder="Official Email (@abesit.in)" class="px-2.5 py-2 rounded-lg border border-slate-200 text-xs bg-white">
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="pt-2 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeReportModal()" class="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">
+            Cancel
+          </button>
+          <button type="submit" class="px-6 py-2.5 text-xs font-bold bg-brand-700 hover:bg-brand-800 text-white rounded-xl shadow-md transition-all">
+            Submit Item Report
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Initiate Claim Verification Modal -->
+  <div id="claimModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative my-8">
+      
+      <!-- Close Button -->
+      <button onclick="closeClaimModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="mb-5">
+        <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+          Controlled Handover Process
+        </span>
+        <h3 class="text-xl font-bold text-brand-900 mt-1">Initiate Ownership Claim</h3>
+        <p class="text-xs text-slate-500">Provide secret distinguishing evidence to verify ownership before physical recovery.</p>
+      </div>
+
+      <!-- Item Targeted Banner -->
+      <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 mb-5 space-y-1">
+        <div class="flex items-center justify-between">
+          <span id="claimItemType" class="text-[10px] font-bold uppercase bg-blue-100 text-blue-800 px-2 py-0.5 rounded">REPORT</span>
+          <span id="claimItemId" class="text-xs font-mono font-bold text-slate-500">#REP-2026-000</span>
+        </div>
+        <h4 id="claimItemTitle" class="text-sm font-bold text-slate-900">Item Title Here</h4>
+        <p id="claimItemLocation" class="text-xs text-slate-500">Campus Location</p>
+      </div>
+
+      <form id="claimForm" class="space-y-4">
+        
+        <!-- Claimant Name & Roll -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Your Full Name *</label>
+            <input type="text" id="claimantName" required placeholder="Shashank Srivastava" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Student Roll / Staff ID *</label>
+            <input type="text" id="claimantRoll" required placeholder="2502900100227" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Institutional Email -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Institutional Email ID *</label>
+          <input type="email" id="claimantEmail" required placeholder="shashank.srivastava@abesit.in" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        </div>
+
+        <!-- Confidential Proof with Distinguishing Marks / Brands -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Confidential Ownership Proof & Distinguishing Marks / Brands *</label>
+          <textarea id="claimEvidence" rows="3" required placeholder="Specify private verification details: distinguishing marks (scratches, engraved initials, stickers), exact brand/model, serial number, internal wallet cards, or device wallpaper hint." class="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none"></textarea>
+          <span class="text-[10px] text-slate-400 block mt-1">This evidence is strictly confidential and reviewed only by Prof. Gagandeep Bhatia and authorized college custodians.</span>
+        </div>
+
+        <!-- Honor Code Checkbox -->
+        <div class="flex items-start gap-2 pt-1">
+          <input type="checkbox" id="honorCheck" required class="mt-0.5 rounded text-sky-600 focus:ring-sky-500">
+          <label for="honorCheck" class="text-[11px] text-slate-600">
+            I confirm that this item belongs to me. Submitting false claims is subject to ABESIT institutional disciplinary policy.
+          </label>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="pt-3 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeClaimModal()" class="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl">
+            Cancel
+          </button>
+          <button type="submit" class="px-6 py-2.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow-md transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-paper-plane text-xs"></i> Submit Claim for Review
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: Item Detail Modal -->
+  <div id="itemDetailModal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 relative my-8">
+      <button onclick="closeItemDetailModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600 text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div id="itemDetailContent">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Main Interactive JavaScript File -->
+  <script src="app.js"></script>
+
+</body>
+</html>

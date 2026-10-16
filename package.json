@@ -1,0 +1,25 @@
+{
+  "name": "lost-and-found-portal",
+  "version": "1.0.0",
+  "description": "Lost and Found Web Portal for College - ABESIT Project ID: 2026-27CSEMPID058",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "abesit",
+    "lost-and-found",
+    "college-project",
+    "express",
+    "react",
+    "mongodb"
+  ],
+  "author": "Shreyas Upadhyay, Shekhar Kumar, Shashank Srivastava, Priyesh Kumar Singh",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
